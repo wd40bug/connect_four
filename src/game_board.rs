@@ -1,12 +1,16 @@
 use crate::piece::Piece;
 
+use core::time;
 use std::fmt::Display;
 
 use std::fmt::Formatter;
+use std::thread;
 
 
 use arr_macro::arr;
+use simple_ansi::cursor;
 
+#[derive(Clone)]
 pub struct GameBoard{
     board: [[Piece;6];7]
 }
@@ -23,6 +27,7 @@ impl GameBoard{
         for i in 0..6 {
             match self.board[x][i]{
                 Piece::None => {
+                    self.fall_to(x, i, piece);
                     self.board[x][i] = piece;
                     return i;
                 },
@@ -30,6 +35,19 @@ impl GameBoard{
             }
         }
         return 100;
+    }
+    fn with(&self,x:usize,y:usize,piece:Piece)->GameBoard{
+        let mut self_clone = self.clone();
+        self_clone.board[x][y] = piece;
+        self_clone
+    }
+    fn fall_to(&self, x:usize, y:usize, piece: Piece){
+        for i in (y..6).rev(){
+            println!("{}",self.with(x, i, piece));
+            cursor::move_up(7);
+	        cursor::move_to_column(0);
+            thread::sleep(time::Duration::from_millis(100))
+        }
     }
     pub fn get(&self, x:usize, y:usize)->Result<&Piece,String>{
         if (0..7).contains(&x)&&(0..6).contains(&y){
@@ -56,6 +74,7 @@ impl Display for GameBoard{
             }
             result.push_str("\n")
         }
+        result.push_str(" 01 02 03 04 05 06 07 ");
         write!(f,"{}",result)
     }
 }

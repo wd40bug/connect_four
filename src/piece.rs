@@ -2,11 +2,6 @@
 use std::fmt::Formatter;
 use std::fmt::Display;
 use ansi_term::Style;
-
-use ansi_term::Colour::Red;
-
-use ansi_term::Colour::Blue;
-
 use ansi_term::Colour::White;
 
 #[derive(Copy,Clone)]
@@ -18,9 +13,9 @@ pub enum Piece{
 impl Piece{
     pub fn to_string(&self)->String{
         match self{
-            Piece::Red=>Style::new().on(Red).paint("O"),
-            Piece::Blue=>Style::new().on(Blue).paint("O"),
-            Piece::None=>White.paint(" "),
+            Piece::Red=>Style::new().paint("🔴"),
+            Piece::Blue=>Style::new().paint("🔵"),
+            Piece::None=>White.paint("  "),
         }.to_string()
     }
     pub fn variant_eq(&self, other: &Piece)->bool{
