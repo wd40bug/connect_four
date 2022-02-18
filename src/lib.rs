@@ -5,143 +5,109 @@ use std::io;
 pub mod game_board;
 pub mod piece;
 pub fn run(){
-	let mut x = 0;
+	let mut board = GameBoard::new();
 	loop{
-		let mut play = String::new();
-		io::stdin()
-			.next_line(&mut play)
-			.unwrap();
-		let x = play.parse
+		if player_turn(&mut board, Piece::Red){
+			break;
+		}
+
+		if player_turn(&mut board, Piece::Blue){
+			break;
+		}
+
 	}
 }
-pub fn has_connect_4(board: GameBoard, x:i32, y:i32, color: Piece)->bool{
-	let mut row = 0;
-	for i in y-3..=y+3{
-		if let Ok(piece) = board.get(x.try_into().unwrap(),i.try_into().unwrap()){
-			match piece{
-				Piece::Red=>{
-					match color{
-						Piece::Red=>{
-							row+=1;
-							if row == 4{
-								return true;
-							}
-						},
-						_=>row=0,
-					}
-				},
-				Piece::Blue=>{
-					match color{
-						Piece::Blue=>{
-							row+=1;
-							if row == 4{
-								return true;
-							}
-						},
-						_=>row=0,
-					}
-				}
-				_=>row = 0,
-			}
-		} else{
-			continue;
+fn has_connect_4(board: &GameBoard, x: usize, y: usize, color: Piece)->bool{
+	let mut directions = Directions::new();
+	for i in 1..4 {
+		directions.check_directions(x,y,i,board,&color);
+		if !directions.check_if_any_true(){
+			return false;
 		}
 	}
-	row = 0;
-	for i in x-3..=x+3 {
-		if let Ok(piece) = board.get(x.try_into().unwrap(),i.try_into().unwrap()){
-			match piece{
-				Piece::Red=>{
-					match color{
-						Piece::Red=>{
-							row+=1;
-							if row == 4{
-								return true;
-							}
-						},
-						_=>row=0,
-					}
-				},
-				Piece::Blue=>{
-					match color{
-						Piece::Blue=>{
-							row+=1;
-							if row == 4{
-								return true;
-							}
-						},
-						_=>row=0,
-					}
-				}
-				_=>row = 0,
-			}
-		} else{
-			continue;
+	return true;
+}
+ struct Directions{
+	north: bool,
+	north_west: bool,
+	west: bool,
+	south_west: bool,
+	south: bool,
+	south_east: bool,
+	east: bool,
+	north_east: bool,
+}
+impl Directions{
+	fn new()->Directions{
+		Directions{
+			north: true,
+			north_west: true,
+			west: true,
+			south_west: true,
+			south: true,
+			south_east: true,
+			east: true,
+			north_east: true,
 		}
 	}
-	row = 0;
-	for i in -3..=3 {
-		if let Ok(piece) = board.get((x+i).try_into().unwrap(),(y+i).try_into().unwrap()){
-			match piece{
-				Piece::Red=>{
-					match color{
-						Piece::Red=>{
-							row+=1;
-							if row == 4{
-								return true;
-							}
-						},
-						_=>row=0,
-					}
-				},
-				Piece::Blue=>{
-					match color{
-						Piece::Blue=>{
-							row+=1;
-							if row == 4{
-								return true;
-							}
-						},
-						_=>row=0,
-					}
-				}
-				_=>row = 0,
-			}
-		} else{
-			continue;
+	fn check_directions(&mut self,x:usize, y:usize, distance:usize, board: &GameBoard, color: &Piece ){
+		if distance>y{
+			self.south=false;
+			self.south_east = false;
+			self.south_west = false;
+		}
+		if distance>x{
+			self.west = false;
+			self.north_west = false;
+			self.south_west = false;
+		}
+		if self.north == true {
+			self.north = check_spot(board,x,y+distance,color);
+		}
+		if self.south == true {
+			self.south = check_spot(board,x,y-distance,color);
+		}
+		if self.west == true {
+			self.west = check_spot(board,x-distance,y,color);
+		}
+		if self.east == true {
+			self.east = check_spot(board,x+distance,y,color);
+		}
+		if self.north_west == true {
+			self.north_west = check_spot(board,x-distance,y+distance,color);
+		}
+		if self.north_east == true {
+			self.north_east = check_spot(board,x+distance,y+distance,color);
+		}
+		if self.south_west == true {
+			self.south_west = check_spot(board,x-distance,y-distance,color);
+		}
+		if self.south_east == true {
+			self.south_east = check_spot(board,x+distance,y-distance,color);
 		}
 	}
-	row = 0;
-	for i in -3..=3 {
-		if let Ok(piece) = board.get((x+i).try_into().unwrap(),(y-i).try_into().unwrap()){
-			match piece{
-				Piece::Red=>{
-					match color{
-						Piece::Red=>{
-							row+=1;
-							if row == 4{
-								return true;
-							}
-						},
-						_=>row=0,
-					}
-				},
-				Piece::Blue=>{
-					match color{
-						Piece::Blue=>{
-							row+=1;
-							if row == 4{
-								return true;
-							}
-						},
-						_=>row=0,
-					}
-				}
-				_=>row = 0,
-			}
-		} else{
-			continue;
+	fn check_if_any_true(&self)->bool{
+		self.north||self.south||self.west||self.east||self.north_west||self.north_east||self.south_west||self.south_east
+	}
+}
+fn check_spot( board: &GameBoard, x: usize, y: usize, color: &Piece)-> bool{
+	if let Ok(piece) = board.get(x,y){
+		if piece.variant_eq(color){
+			return true;
 		}
+	}
+	return false;
+}
+fn player_turn(board: &mut GameBoard, piece: Piece)->bool{
+	let mut play = String::new();
+	io::stdin()
+		.read_line(&mut play)
+		.unwrap();
+	let x: u32 = (play.trim().parse::<u32>().unwrap())-1;
+	let y = board.place(piece,x.try_into().unwrap());
+	println!("{}",board);
+	if has_connect_4(& board,x.try_into().unwrap(),y.try_into().unwrap(),piece){
+		return true;
 	}
 	false
 }
