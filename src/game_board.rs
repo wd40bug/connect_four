@@ -23,18 +23,21 @@ impl GameBoard{
             board: arr![empty_row();7],
         }   
     }
-    pub fn place(&mut self, piece: Piece,x:usize) -> usize{
+    pub fn place(&mut self, piece: Piece,x:usize, pretty: &bool) -> Result<usize,String>{
+        if !(0..7).contains(&x){
+            return Err("Not a valid column".to_string());
+        }
         for i in 0..6 {
             match self.board[x][i]{
                 Piece::None => {
-                    self.fall_to(x, i, piece);
+                    if *pretty {self.fall_to(x, i, piece);}
                     self.board[x][i] = piece;
-                    return i;
+                    return Ok(i);
                 },
                 _=>continue,
             }
         }
-        return 100;
+        return Err("No room in column".to_string());
     }
     fn with(&self,x:usize,y:usize,piece:Piece)->GameBoard{
         let mut self_clone = self.clone();
