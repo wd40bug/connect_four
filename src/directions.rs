@@ -119,7 +119,7 @@ impl Directions{
 		self.north||self.south||self.west||self.east||self.north_west||self.north_east||self.south_west||self.south_east
 	}
 	pub fn check_if_any_4(&self)->bool{
-		self.north_south_count>=4||self.west_east_count>=4||self.south_west_north_east_count>=4||self.north_west_south_east_count>=4
+		self.north_south_count>=3||self.west_east_count>=3||self.south_west_north_east_count>=3||self.north_west_south_east_count>=3
 	}
 	pub fn print(&self){
 		println!("<-------------------------------------------------------------------------------------------->");
@@ -127,7 +127,7 @@ impl Directions{
 		println!("West:      {}               East      {}",self.west,self.east);
 		println!("Southwest: {} South:  {} Southeast:{}",self.south_west,self.south,self.south_east);
 		println!("+____________________________________________________________________________________________+");
-		println!("North to south; {}, West to east: {}, Southwest to Northeast: {}, Northwest to Southeast:{}"
+		println!("North to south: {}, West to east: {}, Southwest to Northeast: {}, Northwest to Southeast:{}"
 			,self.north_south_count, self.west_east_count, self.south_west_north_east_count, 
 			self.north_west_south_east_count);
 		println!("<-------------------------------------------------------------------------------------------->");

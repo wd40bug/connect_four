@@ -49,6 +49,8 @@ pub fn run(pretty: bool) -> String{
 		
 
 	};
+	clean(9);
+	board.dump();
 	line();
 	println!("{} won!",winner);
 	sequence
@@ -67,15 +69,31 @@ fn has_connect_4(board: &GameBoard, x: usize, y: usize, color: Piece, pretty: &b
 	}
 	return true;
 }
-
+pub fn clean(up:u32){
+	for _i in 0..up{
+		cursor::move_up(1);
+		line();
+	}
+}
 fn player_turn(board: &mut GameBoard, piece: Piece, sequence: &mut String, pretty: &bool)->Result<bool,Box<dyn Error>>{
 	println!("{} turn",piece);
 	let mut play = String::new();
 	io::stdin()
 		.read_line(&mut play)?;
+	if play.trim().eq("undo"){
+		if let Some(x) = sequence.pop(){
+			let mut x = x.to_digit(10).unwrap().try_into().unwrap();
+			x-=1;
+			board.undo(x);
+			if *pretty{
+				clean(9);
+			}
+			println!("{}",board);
+			return Ok(false);
+		}
+	}
 	if *pretty{
-		cursor::move_up(9);
-		cursor::move_to_column(0);
+		clean(9);
 	}
 	let x: u32 = (play.trim().parse::<u32>()?)-1;
 	let y = board.place(piece,x.try_into().unwrap(),&pretty)?;

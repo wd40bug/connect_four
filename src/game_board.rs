@@ -1,3 +1,4 @@
+use crate::clean;
 use crate::piece::Piece;
 
 use core::time;
@@ -8,11 +9,11 @@ use std::thread;
 
 
 use arr_macro::arr;
-use simple_ansi::cursor;
+
 
 #[derive(Clone)]
 pub struct GameBoard{
-    board: [[Piece;6];7]
+    board: [[Piece;6];7],
 }
 impl GameBoard{
     pub fn new()->GameBoard{
@@ -47,9 +48,8 @@ impl GameBoard{
     fn fall_to(&self, x:usize, y:usize, piece: Piece){
         for i in (y..6).rev(){
             println!("{}",self.with(x, i, piece));
-            cursor::move_up(7);
-	        cursor::move_to_column(0);
-            thread::sleep(time::Duration::from_millis(100))
+            clean(7);
+            thread::sleep(time::Duration::from_millis(100));
         }
     }
     pub fn get(&self, x:usize, y:usize)->Result<&Piece,String>{
@@ -57,6 +57,25 @@ impl GameBoard{
             return Ok(&self.board[x][y]);
         }
         Err("Value not in board".to_string())
+    }
+    pub fn undo(&mut self, x:usize){
+        for i in 0..6 {
+            match self.board[x][i]{
+                Piece::None=>{self.board[x][i-1] = Piece::None; break;},
+                _=>(),
+
+            }
+        }
+    }
+    pub fn dump(&mut self){
+        for i in (0..6).rev(){
+            for j in 0..7{
+                self.board[j][i] = Piece::None;
+            }            
+            println!("{}",self);
+            clean(7);
+            thread::sleep(time::Duration::from_millis(100));
+        }
     }
     pub fn check_in(&self, x:usize, y:usize) -> bool{
         if let Ok(_foo) = self.get(x,y){
