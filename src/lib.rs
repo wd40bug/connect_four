@@ -29,7 +29,9 @@ pub fn run(pretty: bool) -> String{
 			}
 		}{
 			true=>break Piece::Red,
-			false=>(),
+			false=>if board.check_tie(){
+				break Piece::None;
+			},
 		}
 		match loop{
 			match player_turn(&mut board, Piece::Blue, &mut sequence, &pretty){
@@ -44,14 +46,18 @@ pub fn run(pretty: bool) -> String{
 			}
 		}{
 			true=>break Piece::Blue,
-			false=>(),
+			false=>if board.check_tie(){
+				break Piece::None;
+			},
 		}
 		
 
 	};
-	clean(9);
-	board.dump();
-	line();
+	if pretty{
+		clean(9);
+		board.dump();
+		line();
+	}
 	println!("{} won!",winner);
 	sequence
 }

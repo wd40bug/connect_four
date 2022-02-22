@@ -24,6 +24,14 @@ impl GameBoard{
             board: arr![empty_row();7],
         }   
     }
+    pub fn check_tie(&self) -> bool{
+        for i in 0..7{
+            if self.board[i][5].variant_eq(&Piece::None){
+                return false;
+            }
+        }
+        return true;
+    }
     pub fn place(&mut self, piece: Piece,x:usize, pretty: &bool) -> Result<usize,String>{
         if !(0..7).contains(&x){
             return Err("Not a valid column".to_string());
@@ -49,7 +57,7 @@ impl GameBoard{
         for i in (y..6).rev(){
             println!("{}",self.with(x, i, piece));
             clean(7);
-            thread::sleep(time::Duration::from_millis(100));
+            thread::sleep(time::Duration::from_millis(70));
         }
     }
     pub fn get(&self, x:usize, y:usize)->Result<&Piece,String>{
@@ -68,14 +76,19 @@ impl GameBoard{
         }
     }
     pub fn dump(&mut self){
-        for i in (0..6).rev(){
-            for j in 0..7{
-                self.board[j][i] = Piece::None;
-            }            
+        for _c in 0..5{
+            for i in 0..5{
+                for j in 0..7{
+                    self.board[j][i] = self.board[j][i+1];
+                }
+            }
+            for i in 0..7{
+               self.board[i][5] = Piece::None;
+            }
             println!("{}",self);
             clean(7);
-            thread::sleep(time::Duration::from_millis(100));
-        }
+            thread::sleep(time::Duration::from_millis(300));
+        } 
     }
     pub fn check_in(&self, x:usize, y:usize) -> bool{
         if let Ok(_foo) = self.get(x,y){
@@ -94,7 +107,7 @@ impl Display for GameBoard{
                 result.push_str(&column[i].to_string());
                 result.push_str("|");
             }
-            result.push_str("\n")
+            result.push_str("\n");
         }
         result.push_str(" 01 02 03 04 05 06 07 ");
         write!(f,"{}",result)
