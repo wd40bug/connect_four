@@ -10,6 +10,8 @@ use simple_ansi::erase::line;
 pub mod game_board;
 pub mod piece;
 pub mod directions;
+pub mod ai_stuff;
+
 pub fn run(pretty: bool) -> String{
 	let mut sequence = String::new();
 	let mut board = GameBoard::new();
