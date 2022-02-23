@@ -1,3 +1,5 @@
+use crate::ai_stuff::Position;
+
 struct Solver{
     node_count: u64
 }
@@ -24,10 +26,11 @@ impl Solver{
                 best_score = score.max(best_score);
             }
         }
+        return best_score;
     }
     pub fn solve(&mut self, pos: &Position) -> i32{
         self.node_count = 0;
-        negamax(pos)
+        self.negamax(pos)
     }
-    
+
 }

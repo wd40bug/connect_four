@@ -1,6 +1,6 @@
 use crate::game_board::GameBoard;
 
-struct Position{
+pub struct Position{
     board: [[u32; 6];7],
     height: [u32;7],
     moves: u32,
@@ -45,5 +45,5 @@ impl Position{
             moves: 0,
         }
     }
-    
+
 }
