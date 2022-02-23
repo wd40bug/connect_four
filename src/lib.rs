@@ -11,6 +11,7 @@ pub mod game_board;
 pub mod piece;
 pub mod directions;
 pub mod ai_stuff;
+pub mod solver;
 
 pub fn run(pretty: bool) -> String{
 	let mut sequence = String::new();
