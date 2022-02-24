@@ -1,7 +1,7 @@
 use crate::ai_stuff::Position;
 
-struct Solver{
-    node_count: u64
+pub struct Solver{
+    pub node_count: u64
 }
 impl Solver{
     fn negamax(&mut self, pos: &Position)->i32{
@@ -12,17 +12,17 @@ impl Solver{
 
         for x in 0usize..7{
             if pos.can_play(x) && pos.is_winning_move(x){
-                return (43 - pos.moves)/2;
+                return (43 - pos.moves) as i32/2;
             }
         }
 
-        let best_score = -42;
+        let mut best_score = -42;
 
         for x in 0..7{
             if pos.can_play(x){
-                let mut pos2 = pos;
+                let mut pos2 = pos.clone();
                 pos2.play(x);
-                let score = -self.negamax(pos2);
+                let score = -self.negamax(&pos2);
                 best_score = score.max(best_score);
             }
         }
