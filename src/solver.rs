@@ -1,10 +1,12 @@
 use crate::ai_stuff::Position;
+use ansi_term::Color::Purple;
 
 pub struct Solver{
     pub node_count: u64
 }
 impl Solver{
     fn negamax(&mut self, pos: &Position)->i32{
+        log::info!("negamaxing {}", Purple.paint(&pos.seq));
         self.node_count+=1;
         if pos.moves == 42{
             return  0;
@@ -23,7 +25,7 @@ impl Solver{
                 let mut pos2 = pos.clone();
                 pos2.play(x);
                 let score = -self.negamax(&pos2);
-                best_score = score.max(best_score);
+                best_score = if score > best_score{score} else {best_score};
             }
         }
         return best_score;

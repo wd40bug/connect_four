@@ -1,4 +1,4 @@
-use std::{fmt::Display};
+use std::{fmt::Display, char};
 use ansi_term::Colour::{Red,Cyan,White};
 
 #[derive(Clone)]
@@ -6,6 +6,7 @@ pub struct Position{
     pub board: BoardWrapper,
     pub height: [u32;7],
     pub moves: u32,
+    pub seq: String,
 }
 #[derive(Clone)]
 pub struct BoardWrapper([[u32; 6];7]);
@@ -31,6 +32,7 @@ impl Position{
         self.height[col] < 6
     }
     pub fn play(&mut self, col: usize){
+        self.seq.push(char::from_digit(col as u32+1,10).unwrap());
         self.board.0[col][self.height[col] as usize] = 1+self.moves%2;
         self.height[col]+=1;
         self.moves+=1;
@@ -78,6 +80,7 @@ impl Position{
             board: BoardWrapper([[0;6];7]),
             height: [0;7],
             moves: 0,
+            seq: String::new(),
         }
     }
 
