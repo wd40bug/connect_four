@@ -6,7 +6,6 @@ pub struct Solver{
 }
 impl Solver{
     fn negamax(&mut self, pos: &Position)->i32{
-        log::info!("negamaxing {}", Purple.paint(&pos.seq));
         self.node_count+=1;
         if pos.moves == 42{
             return  0;

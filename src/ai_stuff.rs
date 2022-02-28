@@ -49,7 +49,7 @@ impl Position{
             for dx in (-1i32..=1).step_by(2){
                 let mut x = col as i32+dx;
                 let mut y = self.height[col]as i32+dx*dy;
-                while x >= 0 && x < y && y >= 0 && y < 6 && self.board.0[x as usize][y as usize] == current_player{
+                while x >= 0 && x < 7 && y >= 0 && y < 6 && self.board.0[x as usize][y as usize] == current_player{
                     x+=dx;
                     y+=dy*dx;
                     nb+=1;
@@ -62,7 +62,6 @@ impl Position{
         false
     }
     pub fn set_up(&mut self, seq: String) -> bool{
-        println!("{}",seq);
         for i in 0..seq.len(){
             let col:i32 = seq.chars().nth(i).unwrap().to_digit(10).unwrap() as i32 -1;
             if col < 0 || col >= 7 || !self.can_play(col as usize) || self.is_winning_move(col as usize){
@@ -71,8 +70,6 @@ impl Position{
                 self.play(col as usize);
             }
         }
-        log::info!("set_up complete for {}",seq);
-        log::info!("\n\n{}",self.board);
         true
     }
     pub fn new()->Position{

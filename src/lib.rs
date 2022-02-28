@@ -12,7 +12,8 @@ pub mod piece;
 pub mod directions;
 pub mod ai_stuff;
 pub mod solver;
-
+#[cfg(test)]
+pub mod testing;
 pub fn run(pretty: bool) -> String{
 	let mut sequence = String::new();
 	let mut board = GameBoard::new();
