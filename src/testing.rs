@@ -7,7 +7,7 @@ fn test_scoring(){
     let mut tests: u64 = 0;
     let mut total_time:u128 = 0;
     pretty_env_logger::init();
-    let mut solver = Solver{ node_count: 0 };
+    let mut solver = Solver{ node_count: 0, column_order: [3,2,4,1,5,0,6] };
     let contents = fs::read_to_string("src/tests/Test_L3_R1").unwrap();
     for line in contents.lines(){
         let mut pos = Position::new();

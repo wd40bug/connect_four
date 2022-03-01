@@ -3,8 +3,8 @@ use ansi_term::Colour::{Red,Cyan,White};
 
 #[derive(Clone)]
 pub struct Position{
-    pub board: BoardWrapper,
-    pub height: [u32;7],
+    mask: u32,
+    current_position: u32,
     pub moves: u32,
     pub seq: String,
 }
@@ -28,6 +28,30 @@ impl Display for BoardWrapper{
     }
 }
 impl Position{
+    fn alighnment(pos: u64)->bool{
+        let mut m: u64 = pos & (pos >> 7);
+        if m & (m>>14)!=0 {return true;}
+
+        m = pos & (pos>>7);
+        if m & m>>12!=0 {return  true;}
+
+        m = pos & (pos >> 8);
+        if m & (m >> 16)!=0 {return true;}
+
+        m = pos & (pos >> 1);
+        if m & (m >> 2)!=0 {return true;}
+
+        return false;
+    }
+    fn top_mask(col:u64) -> u64{
+        (1 << 5) << col*7
+    }
+    fn bottom_mask(col: u64) -> u64{
+        1 << col*7
+    }
+    fn column_mask(col: u64) -> u64{
+        ((1<<6)-1)<<col*7
+    }
     pub fn can_play(&self, col: usize)->bool{
         self.height[col] < 6
     }
