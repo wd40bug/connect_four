@@ -21,10 +21,10 @@ fn test_scoring(){
                 tests+=1;
                 let elapsed = elapsed.as_micros();
                 total_time+=elapsed;
-                log::info!("sequence: {0: <50} score: {1: <10} nodes:{2: <10} time: {3: <10}",line.to_string().split(" ").collect::<Vec<_>>()[0],score,solver.node_count,elapsed);
+                log::info!("sequence: {0: <50} score: {1: <10} nodes:{2: <10} time: {3}\u{00B5}s",line.to_string().split(" ").collect::<Vec<_>>()[0],score,solver.node_count,elapsed);
                 assert_eq!(score, line.to_string().split(" ").collect::<Vec<_>>()[1].parse().unwrap());
             }
         }
     }
-    log::info!("average node count: {}, average time: {}, total time: {}, total tests: {}",nodes/tests,total_time/tests as u128,total_time,tests);
+    log::info!("average node count: {}, average time: {}\u{00B5}s, total time: {}\u{00B5}s, total tests: {}",nodes/tests,total_time/tests as u128,total_time,tests);
 }

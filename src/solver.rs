@@ -1,5 +1,5 @@
 use crate::ai_stuff::Position;
-use ansi_term::Color::Purple;
+
 
 pub struct Solver{
     pub node_count: u64
