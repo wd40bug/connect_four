@@ -1,4 +1,5 @@
 use crate::ai_stuff::Position;
+use ansi_term::Color::Purple;
 
 
 pub struct Solver{
@@ -7,6 +8,7 @@ pub struct Solver{
 }
 impl Solver{
     fn negamax(&mut self, pos: &Position, alpha: i32, beta: i32)->i32{
+        log::info!("negamaxing: {}",Purple.paint(&pos.seq));
         let mut beta = beta;
         let mut alpha = alpha;
         self.node_count+=1;

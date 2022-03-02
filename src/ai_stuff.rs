@@ -3,8 +3,8 @@ use ansi_term::Colour::{Red,Cyan,White};
 
 #[derive(Clone)]
 pub struct Position{
-    mask: u32,
-    current_position: u32,
+    mask: u64,
+    current_position: u64,
     pub moves: u32,
     pub seq: String,
 }
@@ -28,12 +28,12 @@ impl Display for BoardWrapper{
     }
 }
 impl Position{
-    fn alighnment(pos: u64)->bool{
+    fn alignment(pos: u64)->bool{
         let mut m: u64 = pos & (pos >> 7);
         if m & (m>>14)!=0 {return true;}
 
-        m = pos & (pos>>7);
-        if m & m>>12!=0 {return  true;}
+        m = pos & (pos>>6);
+        if m & (m>>12)!=0 {return  true;}
 
         m = pos & (pos >> 8);
         if m & (m >> 16)!=0 {return true;}
@@ -53,53 +53,33 @@ impl Position{
         ((1<<6)-1)<<col*7
     }
     pub fn can_play(&self, col: usize)->bool{
-        self.height[col] < 6
+        self.mask & Self::top_mask(col as u64) == 0
     }
     pub fn play(&mut self, col: usize){
-        self.seq.push(char::from_digit(col as u32+1,10).unwrap());
-        self.board.0[col][self.height[col] as usize] = 1+self.moves%2;
-        self.height[col]+=1;
+        self.seq.push(char::from_digit(col as u32, 10).unwrap());
+        self.current_position ^= self.mask;
+        self.mask |= self.mask + Self::bottom_mask(col as u64);
         self.moves+=1;
     }
     pub fn is_winning_move(&self, col: usize)->bool{
-        let current_player = 1+self.moves%2;
-        if self.height[col] >=3 
-            && self.board.0[col][self.height[col] as usize-1] == current_player
-            && self.board.0[col][self.height[col] as usize-2] == current_player
-            && self.board.0[col][self.height[col] as usize-3] == current_player 
-            {return true;}
-        for dy in -1i32..=1{
-            let mut nb = 0;
-            for dx in (-1i32..=1).step_by(2){
-                let mut x = col as i32+dx;
-                let mut y = self.height[col]as i32+dx*dy;
-                while x >= 0 && x < 7 && y >= 0 && y < 6 && self.board.0[x as usize][y as usize] == current_player{
-                    x+=dx;
-                    y+=dy*dx;
-                    nb+=1;
-                }
-            }
-            if nb >= 3{
-                return true;
-            }
-        }
-        false
+        let mut pos: u64 = self.current_position;
+        pos |= (self.mask + Self::bottom_mask(col as u64)) & Self::column_mask(col as u64);
+        Self::alignment(pos)
     }
     pub fn set_up(&mut self, seq: String) -> bool{
-        for i in 0..seq.len(){
-            let col:i32 = seq.chars().nth(i).unwrap().to_digit(10).unwrap() as i32 -1;
-            if col < 0 || col >= 7 || !self.can_play(col as usize) || self.is_winning_move(col as usize){
-                return false
-            } else{
-                self.play(col as usize);
+        for (j,i) in seq.chars().enumerate(){
+            let col:isize = i.to_digit(10).unwrap() as isize - 1;
+            if col<0||col>=7||!self.can_play(col as usize)||self.is_winning_move(col as usize){
+                log::error!("set up failed at character{} at index {}",i,j);
+                return false;
             }
         }
-        true
+        return true;
     }
     pub fn new()->Position{
         Position{
-            board: BoardWrapper([[0;6];7]),
-            height: [0;7],
+            current_position: 0,
+            mask: 0,
             moves: 0,
             seq: String::new(),
         }
