@@ -16,7 +16,7 @@ fn test_scoring(){
     let contents = fs::read_to_string("src/tests/Test_L3_R1").unwrap();
     let pb = ProgressBar::new(1000);
     pb.set_style(ProgressStyle::default_bar().template("[{elapsed_precise}] {wide_bar:40.cyan/blue} {pos}/{len} ({eta})")
-        .progress_chars(";<0")
+        .progress_chars("#=*")
     );
     for line in contents.lines(){
         let mut pos = Position::new();
