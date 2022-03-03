@@ -1,14 +1,23 @@
-use std::{fs, time::SystemTime};
+use std::{fs::{self, File}, time::SystemTime};
 use ansi_term::Color::Yellow;
+use chrono::Local;
 use crate::{solver::Solver, ai_stuff::Position};
+use indicatif::{ProgressBar, ProgressStyle};
+use log::LevelFilter;
 #[test]
 fn test_scoring(){
     let mut nodes: u64 = 0;
     let mut tests: u64 = 0;
     let mut total_time:u128 = 0;
-    pretty_env_logger::init();
+    let date_time = Local::now().timestamp();
+    File::create(format!("logs/{}.log",date_time)).unwrap();
+    simple_logging::log_to_file(format!("logs/{}.log",date_time), LevelFilter::Info).unwrap();
     let mut solver = Solver{ node_count: 0, column_order: [3,2,4,1,5,0,6] };
-    let contents = fs::read_to_string("src/tests/Test_L3_R1").unwrap();
+    let contents = fs::read_to_string("src/tests/Test_L2_R1").unwrap();
+    let pb = ProgressBar::new(1000);
+    pb.set_style(ProgressStyle::default_bar().template("[{elapsed_precise}] {wide_bar:40.cyan/blue} {pos}/{len} ({eta})")
+        .progress_chars(";<0")
+    );
     for line in contents.lines(){
         let mut pos = Position::new();
         if !pos.set_up(line.to_string().split(" ").collect::<Vec<_>>()[0].to_string()) {
@@ -17,6 +26,7 @@ fn test_scoring(){
             let now = SystemTime::now();
             let score = solver.solve(&pos);
             if let Ok(elapsed) = now.elapsed(){
+                pb.inc(1);
                 nodes+=solver.node_count;
                 tests+=1;
                 let elapsed = elapsed.as_micros();

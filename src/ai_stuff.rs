@@ -73,6 +73,7 @@ impl Position{
                 log::error!("set up failed at character{} at index {}",i,j);
                 return false;
             }
+            self.play(col as usize);
         }
         return true;
     }

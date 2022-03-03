@@ -1,7 +1,7 @@
 use std::time::SystemTime;
 
 use connect_four::{run, solver::Solver, ai_stuff::Position};
-
+use log::LevelFilter;
 
 fn main(){
     if let Some(arg) = std::env::args().nth(1){
@@ -13,7 +13,7 @@ fn main(){
                 std::io::stdin().read_line(&mut foo).unwrap();
                 foo.trim().to_string()
             };
-            pretty_env_logger::init();
+            simple_logging::log_to_stderr(LevelFilter::Off);
             let mut solver = Solver{node_count: 0, column_order: [3,2,4,1,5,0,6]};
             let mut pos = Position::new();
             if !pos.set_up(seq.clone()){
@@ -21,7 +21,7 @@ fn main(){
             } else{
                 let now = SystemTime::now();
                 let score = solver.solve(&pos);
-                log::info!("seq: {}, score: {}, time: {}\u{00B5}, nodes: {}, time per node: {}",&seq,score,now.elapsed().unwrap().as_millis(),solver.node_count, solver.node_count as u128/now.elapsed().unwrap().as_millis());
+                log::info!("seq: {}, score: {}, time: {}\u{00B5}, nodes: {}, time per node: {}",&seq,score,now.elapsed().unwrap().as_millis(),solver.node_count, solver.node_count as u128/now.elapsed().unwrap().as_micros());
             }
         } else if arg.eq("play"){
             let pretty = if let Some(play_arg) = std::env::args().nth(2){
