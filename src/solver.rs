@@ -51,8 +51,25 @@ impl Solver{
         return alpha;
     }
     pub fn solve(&mut self, pos: &Position) -> i32{
-        self.node_count = 0;
-        self.negamax(pos, -21, 21)
+        let mut min = -(6*7 - pos.moves as i32)/2;
+        let mut max:i32 = (6*7+1 - pos.moves as i32)/2;
+        while min<max {
+            let mut med = min + (max - min)/2;
+            med = if med <= 0 && min/2<med{
+                min/2
+            } else if med >=0 && max/2 > med{
+                max/2
+            } else{
+                med
+            };
+            let r =self.negamax(pos, med, med + 1);
+            if r<=med {
+                max = r;
+            } else{
+                min = r;
+            }
+        }
+        min
     }
 
 }

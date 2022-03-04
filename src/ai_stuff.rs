@@ -1,12 +1,16 @@
 use std::{fmt::Display, char};
 use ansi_term::Colour::{Red,Cyan,White};
 
+const HEIGHT: i32 = 6;
+const WIDTH: i32 =7;
 #[derive(Clone)]
 pub struct Position{
     mask: u64,
     current_position: u64,
     pub moves: u32,
     pub seq: String,
+    // pub bottom_mask: u64,
+
 }
 #[derive(Clone)]
 pub struct BoardWrapper([[u32; 6];7]);
@@ -80,6 +84,42 @@ impl Position{
     pub fn key(&self) -> u64{
         self.current_position+self.mask
     }
+    // pub fn possible(&self) ->u64{
+    //     (self.mask+self.bottom_mask)&self.bottom_mask
+    // }
+    // pub fn non_losing_moves(&self) -> u64{
+        
+    // }
+    // pub fn winning_positions(&self) -> u64{
+    //     let position = self.current_position^self.mask;
+    //     let r: u64 = (position << 1) & (position << 2) & (position << 3);
+
+    //     //horizontal
+    //     let p: u64 = (position << (HEIGHT+1)) & (position << 2*(HEIGHT+1));
+    //     r |= p & (position << 3*(HEIGHT+1));
+    //     r |= p & (position >> (HEIGHT+1));
+    //     p = (position >> (HEIGHT+1)) & (position >> 2*(HEIGHT+1));
+    //     r |= p & (position << (HEIGHT+1));
+    //     r |= p & (position >> 3*(HEIGHT+1));
+
+    //     //diagonal 1
+    //     p = (position << HEIGHT) & (position << 2*HEIGHT);
+    //     r |= p & (position << 3*HEIGHT);
+    //     r |= p & (position >> HEIGHT);
+    //     p = (position >> HEIGHT) & (position >> 2*HEIGHT);
+    //     r |= p & (position << HEIGHT);
+    //     r |= p & (position >> 3*HEIGHT);
+
+    //     //diagonal 2
+    //     p = (position << (HEIGHT+2)) & (position << 2*(HEIGHT+2));
+    //     r |= p & (position << 3*(HEIGHT+2));
+    //     r |= p & (position >> (HEIGHT+2));
+    //     p = (position >> (HEIGHT+2)) & (position >> 2*(HEIGHT+2));
+    //     r |= p & (position << (HEIGHT+2));
+    //     r |= p & (position >> 3*(HEIGHT+2));
+
+    //     return r & (self.board_mask ^ self.mask);
+    // }
     pub fn new()->Position{
         Position{
             current_position: 0,
