@@ -1,7 +1,7 @@
 use std::{fs::{self, File}, time::SystemTime};
 use ansi_term::Color::Yellow;
 use chrono::Local;
-use crate::{solver::Solver, ai_stuff::Position};
+use crate::{solver::Solver, ai_stuff::Position, transposition_table::TranspositionTable};
 use indicatif::{ProgressBar, ProgressStyle};
 use log::LevelFilter;
 #[test]
@@ -12,10 +12,10 @@ fn test_scoring(){
     let date_time = Local::now().timestamp();
     File::create(format!("logs/{}.log",date_time)).unwrap();
     simple_logging::log_to_file(format!("logs/{}.log",date_time), LevelFilter::Info).unwrap();
-    let mut solver = Solver{ node_count: 0, column_order: [3,2,4,1,5,0,6] };
+    let mut solver = Solver{ node_count: 0, column_order: [3,2,4,1,5,0,6], transposition_table: TranspositionTable::new(8388593) };
     let contents = fs::read_to_string("src/tests/Test_L3_R1").unwrap();
     let pb = ProgressBar::new(1000);
-    pb.set_style(ProgressStyle::default_bar().template("[{elapsed_precise}] {wide_bar:40.cyan/blue} {pos}/{len} ({eta})")
+    pb.set_style(ProgressStyle::default_bar().template("[{elapsed_precise}] {bar:40.cyan/blue} {msg:<50} {pos}/{len} ({eta_precise})")
         .progress_chars("#=*")
     );
     for line in contents.lines(){
@@ -24,6 +24,7 @@ fn test_scoring(){
             log::warn!("{}",Yellow.paint("you done messed up"));
         } else{
             let now = SystemTime::now();
+            pb.set_message(pos.seq.clone());
             let score = solver.solve(&pos);
             if let Ok(elapsed) = now.elapsed(){
                 pb.inc(1);
@@ -36,5 +37,5 @@ fn test_scoring(){
             }
         }
     }
-    log::info!("average node count: {}, average time: {}\u{00B5}s, total time: {}\u{00B5}s, total tests: {}",nodes/tests,total_time/tests as u128,total_time,tests);
+    log::info!("average node count: {}, total_node_count: {}, average time: {}\u{00B5}s, total time: {}\u{00B5}s, total tests: {}",nodes/tests,nodes,total_time/tests as u128,total_time,tests);
 }

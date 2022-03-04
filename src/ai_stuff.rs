@@ -77,6 +77,9 @@ impl Position{
         }
         return true;
     }
+    pub fn key(&self) -> u64{
+        self.current_position+self.mask
+    }
     pub fn new()->Position{
         Position{
             current_position: 0,

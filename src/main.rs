@@ -1,6 +1,6 @@
 use std::time::SystemTime;
 
-use connect_four::{run, solver::Solver, ai_stuff::Position};
+use connect_four::{run, solver::Solver, ai_stuff::Position, transposition_table::TranspositionTable};
 use log::LevelFilter;
 
 fn main(){
@@ -14,7 +14,7 @@ fn main(){
                 foo.trim().to_string()
             };
             simple_logging::log_to_stderr(LevelFilter::Off);
-            let mut solver = Solver{node_count: 0, column_order: [3,2,4,1,5,0,6]};
+            let mut solver = Solver{node_count: 0, column_order: [3,2,4,1,5,0,6], transposition_table: TranspositionTable::new(8388593)};
             let mut pos = Position::new();
             if !pos.set_up(seq.clone()){
                 log::warn!("You have messed up");
