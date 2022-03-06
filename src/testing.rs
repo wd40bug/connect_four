@@ -39,7 +39,3 @@ fn test_scoring(){
     }
     log::info!("average node count: {}, total_node_count: {}, average time: {}\u{00B5}s, total time: {}\u{00B5}s, total tests: {}",nodes/tests,nodes,total_time/tests as u128,total_time,tests);
 }
-#[test]
-fn test_bit_array(){
-    assert_eq!([1;64],u64_to_bit_array(u64::MAX))
-}
