@@ -13,7 +13,7 @@ fn test_scoring(){
     File::create(format!("logs/{}.log",date_time)).unwrap();
     simple_logging::log_to_file(format!("logs/{}.log",date_time), LevelFilter::Info).unwrap();
     let mut solver = Solver{ node_count: 0, column_order: [3,2,4,1,5,0,6], transposition_table: TranspositionTable::new(8388593) };
-    let contents = fs::read_to_string("src/tests/Test_L1_R1").unwrap();
+    let contents = fs::read_to_string("src/tests/Test_L3_R1").unwrap();
     let pb = ProgressBar::new(1000);
     pb.set_style(ProgressStyle::default_bar().template("[{elapsed_precise}] {bar:40.cyan/blue} {msg:<50} {pos}/{len} ({eta_precise})")
         .progress_chars("#=*")
@@ -38,4 +38,8 @@ fn test_scoring(){
         }
     }
     log::info!("average node count: {}, total_node_count: {}, average time: {}\u{00B5}s, total time: {}\u{00B5}s, total tests: {}",nodes/tests,nodes,total_time/tests as u128,total_time,tests);
+}
+#[test]
+fn test_bit_array(){
+    assert_eq!([1;64],u64_to_bit_array(u64::MAX))
 }
