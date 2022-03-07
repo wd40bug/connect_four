@@ -1,0 +1,8 @@
+[00:00:00.146] (7fe82e9f0700) ERROR  set up failed at character4 at index 35
+[00:00:00.146] (7fe82e9f0700) WARN   [33myou done messed up[0m
+[00:00:00.148] (7fe82e9f0700) INFO   sequence: 7422341735647741166133573473242566                 score: 1          nodes:66         time: 724µs
+[00:00:00.149] (7fe82e9f0700) ERROR  set up failed at character3 at index 36
+[00:00:00.150] (7fe82e9f0700) WARN   [33myou done messed up[0m
+[00:00:00.150] (7fe82e9f0700) ERROR  set up failed at character4 at index 38
+[00:00:00.151] (7fe82e9f0700) WARN   [33myou done messed up[0m
+[00:00:00.152] (7fe82e9f0700) INFO   sequence: 65214673556155731566316327373221417                score: 1          nodes:127        time: 37µs
