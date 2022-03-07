@@ -17,7 +17,7 @@ fn main() {
                     std::io::stdin().read_line(&mut foo).unwrap();
                     foo.trim().to_string()
                 };
-                simple_logging::log_to_stderr(LevelFilter::Info);
+                simple_logging::log_to_stderr(LevelFilter::Debug);
                 let mut solver = Solver {
                     node_count: 0,
                     column_order: [3, 2, 4, 1, 5, 0, 6],
@@ -28,6 +28,8 @@ fn main() {
                     log::warn!("You have messed up");
                 } else {
                     let now = SystemTime::now();
+                    print_seq(&seq);
+                    log::info!("position: {}",pos.seq);
                     let score = solver.solve(&pos);
                     log::info!("seq: {}, pos: {}, score: {}, time: {}\u{00B5}, nodes: {}, time per node: {}",&seq,pos.current_position,score,now.elapsed().unwrap().as_millis(),solver.node_count, solver.node_count as u128/now.elapsed().unwrap().as_micros());
                 }

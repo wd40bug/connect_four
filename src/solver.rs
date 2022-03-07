@@ -1,3 +1,5 @@
+
+
 use crate::{ai_stuff::Position, transposition_table::TranspositionTable};
 
 pub const HEIGHT: i32 = 6;
@@ -25,12 +27,12 @@ impl Solver{
         if pos.moves as i32>=WIDTH*HEIGHT-2{
             return 0;
         }
-        let min = (WIDTH*HEIGHT-2-pos.moves as i32)/2;
+        let min = -(WIDTH*HEIGHT-2 - pos.moves as i32)/2;
         if alpha < min{
             alpha = min;
             if alpha>=beta{return alpha;}
         }
-        let mut max = (HEIGHT*WIDTH-1-pos.moves as i32)/2;
+        let mut max = (HEIGHT*WIDTH-1 - pos.moves as i32)/2;
         let val = self.transposition_table.get(pos.key());
         if val != 0{
             max = val as i32 + MIN_SCORE -1;
@@ -42,9 +44,10 @@ impl Solver{
         for x in 0..WIDTH as usize{
             if next & Position::column_mask(self.column_order[x] as u64)!=0{
                 let mut pos2 = pos.clone();
-                pos2.play(x);
+                pos2.play(self.column_order[x]);
                 let score = -self.negamax(&pos2, -alpha, -beta);
-                if score>=beta{return beta;}
+                log::debug!("position: {}, score: {}", pos2.seq, score);
+                if score>=beta{return score;}
                 if score>alpha{alpha = score}
             }
         }

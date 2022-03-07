@@ -32,29 +32,6 @@ impl Position {
     pub fn column_mask(col: u64) -> u64 {
         ((1 << HEIGHT) - 1) << col as i32 * (HEIGHT + 1)
     }
-    fn alignment(pos: u64) -> bool {
-        let mut m: u64 = pos & (pos >> (HEIGHT+1));
-        if m & (m >> 2*(HEIGHT+1)) != 0 {
-            return true;
-        }
-
-        m = pos & (pos >> HEIGHT);
-        if m & (m >> 12) != 0 {
-            return true;
-        }
-
-        m = pos & (pos >> (HEIGHT+2));
-        if m & (m >> 16) != 0 {
-            return true;
-        }
-
-        m = pos & (pos >> 1);
-        if m & (m >> 2) != 0 {
-            return true;
-        }
-
-        return false;
-    }
     //constructor
     pub fn new() -> Position {
         Position {
@@ -71,12 +48,12 @@ impl Position {
     }
     //produces a key with ones on top of columns
     pub fn key(&self) -> u64 {
-        self.current_position + self.mask
+        self.current_position + self.mask + Self::BOTTOM_MASK
     }
     //mutator function
     //plays a given column
     pub fn play(&mut self, col: usize) {
-        self.seq.push(char::from_digit(col as u32, 10).unwrap());
+        self.seq.push(char::from_digit(col as u32 +1, 10).unwrap());
         self.current_position ^= self.mask;
         self.mask |= self.mask + Self::bottom_mask_col(col as u64);
         self.moves += 1;
