@@ -46,7 +46,6 @@ impl Solver{
                 let mut pos2 = pos.clone();
                 pos2.play(self.column_order[x]);
                 let score = -self.negamax(&pos2, -alpha, -beta);
-                log::debug!("position: {}, score: {}", pos2.seq, score);
                 if score>=beta{return score;}
                 if score>alpha{alpha = score}
             }
