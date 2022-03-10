@@ -13,6 +13,7 @@ pub mod directions;
 pub mod ai_stuff;
 pub mod solver;
 pub mod transposition_table;
+pub mod sorter;
 #[cfg(test)]
 pub mod testing;
 pub fn run(pretty: bool) -> String{

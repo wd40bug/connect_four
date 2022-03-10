@@ -21,66 +21,19 @@ impl Position {
         };
     }
     //static functions
+    fn pop_count(num: u64) -> u32{
+        let mut c = 0;
+        let mut num = num;
+        while num != 0{
+            num &= num-1;
+            c+=1;
+        }
+        c
+    }
     fn top_mask(col: u64) -> u64 {
         1 << ((HEIGHT - 1) + col as i32 * (HEIGHT + 1))
     }
-    //gets a board with a one on the bottom of the column
-    fn bottom_mask_col(col: u64) -> u64 {
-        1 << col * (HEIGHT + 1) as u64
-    }
-    //gets a board with a 1 on all cells in column
-    pub fn column_mask(col: u64) -> u64 {
-        ((1 << HEIGHT) - 1) << col as i32 * (HEIGHT + 1)
-    }
-    //constructor
-    pub fn new() -> Position {
-        Position {
-            current_position: 0,
-            mask: 0,
-            moves: 0,
-            seq: String::new(),
-        }
-    }
-    //non-static functions
-    //see if column has empty space
-    pub fn can_play(&self, col: usize) -> bool {
-        self.mask & Self::top_mask(col as u64) == 0
-    }
-    //produces a key with ones on top of columns
-    pub fn key(&self) -> u64 {
-        self.current_position + self.mask + Self::BOTTOM_MASK
-    }
-    //mutator function
-    //plays a given column
-    pub fn play(&mut self, col: usize) {
-        self.seq.push(char::from_digit(col as u32 +1, 10).unwrap());
-        self.current_position ^= self.mask;
-        self.mask |= self.mask + Self::bottom_mask_col(col as u64);
-        self.moves += 1;
-    }
-    //sets up the board from a sequence of moves
-    pub fn set_up(&mut self, seq: String) -> bool {
-        for (j, i) in seq.chars().enumerate() {
-            let col: isize = i.to_digit(10).unwrap() as isize - 1;
-            if col < 0
-                || col >= WIDTH as isize
-                || !self.can_play(col as usize)
-                || self.is_winning_move(col as usize)
-            {
-                log::error!("set up failed at character{} at index {}", i, j);
-                return false;
-            }
-            self.play(col as usize);
-        }
-        return true;
-    }
-
-
-
-
-
-    //current working on
-    //static
+    //computes winning positions
     pub fn compute_winning_position(position: u64, mask: u64) -> u64{
         //vertical alignments
         let mut r = (position<<1)&(position<<2)&(position<<3);
@@ -111,13 +64,36 @@ impl Position {
 
         r & (Self::BOARD_MASK^mask)
     }
-    //non-static
+    //gets a board with a one on the bottom of the column
+    fn bottom_mask_col(col: u64) -> u64 {
+        1 << col * (HEIGHT + 1) as u64
+    }
+    //gets a board with a 1 on all cells in column
+    pub fn column_mask(col: u64) -> u64 {
+        ((1 << HEIGHT) - 1) << (col as i32 * (HEIGHT + 1))
+    }
+    //constructor
+    pub fn new() -> Position {
+        Position {
+            current_position: 0,
+            mask: 0,
+            moves: 0,
+            seq: String::new(),
+        }
+    }
+    //non-static functions
+    pub fn move_score(&self, play: u64) -> u32{
+        Self::pop_count(Self::compute_winning_position(self.current_position | play, self.mask))
+    }
+    //gets winning positions
     pub fn winning_position(&self) -> u64{
         Self::compute_winning_position(self.current_position, self.mask)
     }
+    //gets opponent winning positions by inverting the board
     pub fn opponent_winning_position(&self) -> u64{
         Self::compute_winning_position(self.current_position^self.mask, self.mask)
     }
+    //gets possible positions
     pub fn possible(&self) -> u64{
         (self.mask + Self::BOTTOM_MASK) & Self::BOARD_MASK
     }
@@ -141,6 +117,51 @@ impl Position {
 
         possible_mask & !(opponent_win>>1)
     }
+    //see if column has empty space
+    pub fn can_play(&self, col: usize) -> bool {
+        self.mask & Self::top_mask(col as u64) == 0
+    }
+    //produces a key with ones on top of columns
+    pub fn key(&self) -> u64 {
+        self.current_position + self.mask + Self::BOTTOM_MASK
+    }
+    //mutator function
+    //plays a given column
+    pub fn play(&mut self, play: u64) {
+        self.current_position ^= self.mask;
+        self.mask |= play;
+        self.moves += 1;
+    }
+    pub fn play_col(&mut self, col: u64){
+        self.seq.push(char::from_digit(col as u32, 10).unwrap());
+        self.play((self.mask+Self::bottom_mask_col(col)) & Self::column_mask(col));
+    }
+    //sets up the board from a sequence of moves
+    pub fn set_up(&mut self, seq: String) -> bool {
+        for (j, i) in seq.chars().enumerate() {
+            let col: isize = i.to_digit(10).unwrap() as isize - 1;
+            if col < 0
+                || col >= WIDTH as isize
+                || !self.can_play(col as usize)
+                || self.is_winning_move(col as usize)
+            {
+                log::error!("set up failed at character {} at index {}", i, j);
+                return false;
+            }
+            self.play_col(col as u64);
+        }
+        return true;
+    }
+
+
+
+
+
+    //current working on
+    //static
+    
+    //non-static
+    
 
     //updates
     //see if the move can win the game

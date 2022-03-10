@@ -33,24 +33,26 @@ fn main() {
                             seq = String::new();
                             let now = pos.moves%2;
                             let score = if now == current_player{
-                                solver.solve(&pos)
+                                solver.solve(&pos, &None)
                             } else{
-                                -solver.solve(&pos)
+                                -solver.solve(&pos, &None)
                             };
                             log::debug!("Position: {}, Score: {}", ansi_term::Color::Cyan.paint(&pos.seq).to_string(), score);
                             std::io::stdin().read_line(&mut seq).unwrap();
                             seq = seq.trim().to_string();
                             match &seq[..]{
                                 ".."=>{
-                                    seq.pop();
-                                    pos.set_up(seq.clone());
+                                    let mut foo = pos.seq.clone();
+                                    foo.pop();
+                                    pos = Position::new();
+                                    pos.set_up(foo);
                                 },
                                 "ls"=>{
                                     for x in 0..7{
-                                        if pos.possible_non_loosing_moves() & Position::column_mask(solver.column_order[x] as u64)!=0{
+                                        if pos.possible_non_loosing_moves() & Position::column_mask(x)!=0{
                                             let mut pos2 = pos.clone();
-                                            pos2.play(solver.column_order[x]);
-                                            log::debug!("Score: {}, Play: {}",-solver.solve(&pos2), solver.column_order[x]);
+                                            pos2.play_col(x);
+                                            log::debug!("Score: {}, Play: {}",-solver.solve(&pos2, &None), x);
                                         }
                                     }
                                 }
@@ -83,7 +85,7 @@ fn main() {
                         let now = SystemTime::now();
                         print_seq(&seq);
                         log::info!("position: {}",pos.seq);
-                        let score = solver.solve(&pos);
+                        let score = solver.solve(&pos, &None);
                         log::info!("seq: {}, pos: {}, score: {}, time: {}\u{00B5}, nodes: {}, time per node: {}",&seq,pos.current_position,score,now.elapsed().unwrap().as_millis(),solver.node_count, solver.node_count as u128/now.elapsed().unwrap().as_micros());
                     }
                 }
