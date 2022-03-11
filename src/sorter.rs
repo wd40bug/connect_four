@@ -8,7 +8,7 @@ impl Sorter{
     pub fn add(&mut self, play: u64, score: i32){
         self.size+=1;
         let mut pos =self.size as usize;
-        while pos != 0 && self.entries[pos - 1].score > score{
+        while self.entries[pos - 1].score > score{
             self.entries[pos] = self.entries[pos - 1].clone();
             pos-=1;
         }

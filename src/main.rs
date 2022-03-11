@@ -2,7 +2,7 @@ use std::{time::SystemTime, u64};
 
 use ansi_term::Color;
 use connect_four::{
-    ai_stuff::Position, run, solver::Solver, transposition_table::TranspositionTable,
+    ai_stuff::Position, run, solver::Solver, transposition_table::TranspositionTable, command_line::{bits, u64_to_bit_array, print_bits},
 };
 use log::LevelFilter;
 
@@ -107,81 +107,8 @@ fn main() {
                 println!("sequence: {}", run(pretty));
             }
             "bits" => {
-                if let Some(sub_arg) = std::env::args().nth(2) {
-                    if let Ok(num) = sub_arg.parse() {
-                        let bits = u64_to_bit_array(num);
-                        print_bits(bits);
-                    } else {
-                        match &sub_arg[..] {
-                            "seq" => {
-                                if let Some(seq) = std::env::args().nth(3) {
-                                    print_seq(&seq);
-                                } else {
-                                    let mut seq = String::new();
-                                    std::io::stdin().read_line(&mut seq).unwrap();
-                                    print_seq(&seq);
-                                }
-                            }
-                            "eval" => {
-                                let (num1, num2) =
-                                    if let Some(sub_sub_sub_arg) = std::env::args().nth(4) {
-                                        if let Ok(num1) = sub_sub_sub_arg.trim().parse() {
-                                            if let Some(num2_string) = std::env::args().nth(5) {
-                                                if let Ok(num2) = num2_string.parse() {
-                                                    (num1, num2)
-                                                } else {
-                                                    println!(
-                                                        "must provide a number for second argument"
-                                                    );
-                                                    std::process::exit(1)
-                                                }
-                                            } else {
-                                                println!("must provide a second argument");
-                                                std::process::exit(1)
-                                            }
-                                        } else {
-                                            let mut num1 = String::new();
-                                            std::io::stdin().read_line(&mut num1).unwrap();
-                                            let mut num2 = String::new();
-                                            std::io::stdin().read_line(&mut num2).unwrap();
-                                            let num1: u64 = num1.trim().parse().unwrap();
-                                            let num2: u64 = num2.trim().parse().unwrap();
-                                            (num1, num2)
-                                        }
-                                    } else {
-                                        let mut num1 = String::new();
-                                        std::io::stdin().read_line(&mut num1).unwrap();
-                                        let mut num2 = String::new();
-                                        std::io::stdin().read_line(&mut num2).unwrap();
-                                        let num1: u64 = num1.trim().parse().unwrap();
-                                        let num2: u64 = num2.trim().parse().unwrap();
-                                        (num1, num2)
-                                    };
-                                if let Some(sub_sub_arg) = std::env::args().nth(3) {
-                                    match &sub_sub_arg[..] {
-                                        "rs" => println!("{}", num1 >> num2),
-                                        "ls" => println!("{}", num1 << num2),
-                                        "xor" => println!("{}", num1 ^ num2),
-                                        "and" => println!("{}", num1 & num2),
-                                        "or" => println!("{}", num1 | num2),
-                                        _ => println!("not a valid operation"),
-                                    }
-                                } else {
-                                    println!("need a sub argument")
-                                }
-                            }
-                            _ => println!("not a known sub command of 'bits' "),
-                        }
-                    }
-                } else {
-                    let mut num = String::new();
-                    std::io::stdin().read_line(&mut num).unwrap();
-                    println!("");
-                    let num: u64 = num.trim().parse().unwrap();
-                    let bits = u64_to_bit_array(num);
-                    print_bits(bits);
-                }
-            }
+                bits();
+            },
             _ => {
                 println!("argument not recognized");
             }
@@ -194,27 +121,6 @@ fn main() {
         };
         println!("sequence: {}", run(pretty));
     };
-}
-fn u64_to_bit_array(num: u64) -> [u8; 64] {
-    let mut num = num;
-    let mut result = [0 as u8; 64];
-    for i in 0..64 {
-        result[i] = (num & 1) as u8;
-        num >>= 1;
-    }
-    result
-}
-fn print_bits(bits: [u8; 64]) {
-    for i in 0..7 {
-        for j in 0..7 {
-            let x = match bits[(6 - i) + (7 * j)] {
-                1 => ansi_term::Color::Red.paint(1.to_string()).to_string(),
-                _ => 0.to_string(),
-            };
-            print!("{}", x);
-        }
-        println!("");
-    }
 }
 fn print_seq(seq: &String) {
     let mut pos = Position::new();

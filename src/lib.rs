@@ -14,6 +14,7 @@ pub mod ai_stuff;
 pub mod solver;
 pub mod transposition_table;
 pub mod sorter;
+pub mod command_line;
 #[cfg(test)]
 pub mod testing;
 pub fn run(pretty: bool) -> String{
