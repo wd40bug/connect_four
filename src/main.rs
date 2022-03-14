@@ -11,7 +11,7 @@ fn main() {
         match &arg[..] {
             "seq" => {
                 seq();
-            }
+            },
             "play" => {
                 let pretty = if let Some(play_arg) = std::env::args().nth(2) {
                     if play_arg.eq("pretty") {

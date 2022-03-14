@@ -1,19 +1,19 @@
 pub fn seq(){
+    let seq = if let Some(seq) = std::env::args().nth(2) {
+        seq
+    } else {
+        let mut foo = String::new();
+        std::io::stdin().read_line(&mut foo).unwrap();
+        foo.trim().to_string()
+    };
+    simple_logging::log_to_stderr(LevelFilter::Debug);
+    let mut solver = Solver {
+        node_count: 0,
+        column_order: [3, 2, 4, 1, 5, 0, 6],
+        transposition_table: TranspositionTable::new(8388593),
+    };
+    let mut pos = Position::new();
     if let Some(_) = std::env::args().nth(3){
-        let mut seq = if let Some(seq) = std::env::args().nth(2) {
-            seq
-        } else {
-            let mut foo = String::new();
-            std::io::stdin().read_line(&mut foo).unwrap();
-            foo.trim().to_string()
-        };
-        simple_logging::log_to_stderr(LevelFilter::Debug);
-        let mut solver = Solver {
-            node_count: 0,
-            column_order: [3, 2, 4, 1, 5, 0, 6],
-            transposition_table: TranspositionTable::new(8388593),
-        };
-        let mut pos = Position::new();
         if !pos.set_up(seq.clone()) {
             log::warn!("You have messed up");
         } else {
@@ -54,20 +54,7 @@ pub fn seq(){
             }
         }
     } else{
-        let seq = if let Some(seq) = std::env::args().nth(2) {
-            seq
-        } else {
-            let mut foo = String::new();
-            std::io::stdin().read_line(&mut foo).unwrap();
-            foo.trim().to_string()
-        };
-        simple_logging::log_to_stderr(LevelFilter::Debug);
-        let mut solver = Solver {
-            node_count: 0,
-            column_order: [3, 2, 4, 1, 5, 0, 6],
-            transposition_table: TranspositionTable::new(8388593),
-        };
-        let mut pos = Position::new();
+        
         if !pos.set_up(seq.clone()) {
             log::warn!("You have messed up");
         } else {
